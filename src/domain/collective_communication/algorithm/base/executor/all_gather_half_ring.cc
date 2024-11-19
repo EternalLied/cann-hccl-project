@@ -173,32 +173,21 @@ HcclResult AllGatherHalfRing::RunAllGather(u32 rank, u32 rankSize, const std::ve
                 rxSegsSlice.push_back(outputSlices[rxSliceIndex * sliceSize + j]);
             }
         } else {
-            u32 tempIndex;
-            Slice tempSlice;
-            if (nicRankList_[0] < nicRankList_[1]) {
-                for (u32 j = 0; j < sliceSize; j++) {
-                    tempIndex = txSliceIndex * sliceSize + j;
-                    tempSlice.offset = outputSlices[tempIndex].offset + outputSlices[tempIndex].size / 2;
-                    tempSlice.size = outputSlices[tempIndex].size / 2;
-                    txSegsSlice.push_back(tempSlice);
-
-                    tempIndex = rxSliceIndex * sliceSize + j;
-                    tempSlice.offset = outputSlices[tempIndex].offset + outputSlices[tempIndex].size / 2;
-                    tempSlice.size = outputSlices[tempIndex].size / 2;
-                    rxSegsSlice.push_back(tempSlice);
-                }
-            } else {
-                for (u32 j = 0; j < sliceSize; j++) {
-                    tempIndex = txSliceIndex * sliceSize + j;
-                    tempSlice.offset = outputSlices[tempIndex].offset;
-                    tempSlice.size = outputSlices[tempIndex].size / 2;
-                    txSegsSlice.push_back(tempSlice);
-
-                    tempIndex = rxSliceIndex * sliceSize + j;
-                    tempSlice.offset = outputSlices[tempIndex].offset;
-                    tempSlice.size = outputSlices[tempIndex].size / 2;
-                    rxSegsSlice.push_back(tempSlice);
-                }
+            Slice txTempSlice, rxTempSlice;
+            for (u32 j = 0; j < sliceSize; j++) {
+                    u32 txTempIndex = txSliceIndex * sliceSize + j;
+                    u32 rxTempIndex = rxSliceIndex * sliceSize + j;
+                    if (nicRankList_[0] < nicRankList_[1]) {
+                        txTempSlice.offset = outputSlices[txTempIndex].offset + outputSlices[txTempIndex].size / 2;
+                        rxTempSlice.offset = outputSlices[rxTempIndex].offset + outputSlices[rxTempIndex].size / 2;
+                    } else {
+                        txTempSlice.offset = outputSlices[txTempIndex].offset;
+                        rxTempSlice.offset = outputSlices[rxTempIndex].offset;
+                    }
+                    txTempSlice.size = outputSlices[txTempIndex].size / 2;
+                    rxTempSlice.size = outputSlices[rxTempIndex].size / 2;
+                    txSegsSlice.push_back(txTempSlice);
+                    rxSegsSlice.push_back(rxTempSlice);
             }
         }
 
