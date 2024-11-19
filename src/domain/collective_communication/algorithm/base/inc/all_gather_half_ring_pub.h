@@ -8,8 +8,8 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
-#ifndef ALL_GATHER_RING_PUB_H
-#define ALL_GATHER_RING_PUB_H
+#ifndef ALL_GATHER_HALF_RING_PUB_H
+#define ALL_GATHER_HALF_RING_PUB_H
 
 #include "executor_base_pub.h"
 
