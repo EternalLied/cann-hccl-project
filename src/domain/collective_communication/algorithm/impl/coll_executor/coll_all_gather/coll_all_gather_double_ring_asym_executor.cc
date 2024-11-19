@@ -354,7 +354,7 @@ HcclResult CollAllGatherDoubleRingAsymExecutor::KernelRun(const OpParam &param, 
             // allgather输入放在CCL buffer上，通过设置nullptr指示要从CCL buffer获取输入
             opInfo.inputAddr = nullptr;
         }
-        CHK_RET(MultiRingAllGatherConcurrent(param.tag, execMem.inputMem, execMem.outputMem, execMem.count,
+        CHK_RET(MultiRingAsymAllGather(param.tag, execMem.inputMem, execMem.outputMem, execMem.count,
             param.DataDes.dataType, mult4RingsSlice, param.stream, PROF_STAGE_2, 0, opInfoPtr, multRingsUserMemSlice));
     }
     HCCL_INFO("[CollAllGatherDoubleRingAsymExecutor] all gather double ring inner run success");
