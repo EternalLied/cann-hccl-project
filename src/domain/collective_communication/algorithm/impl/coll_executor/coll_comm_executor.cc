@@ -1638,7 +1638,7 @@ std::vector<std::vector<Slice> > CollCommExecutor::PrepareMultiRingSlice(const s
 
     u32 ringRanks = multiRingsOrder[0].size(); // 获取单个 ring 上设备的数量
 
-    // 将数每块据切分为 ringCount 份
+    // 将数每块据切分为 ringCount 份 = 2 
     HcclResult ret;
     mutliSegsSlices.reserve(dataSegsSlice.size());
     if (avoidCceRewrite) {
