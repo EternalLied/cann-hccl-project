@@ -103,7 +103,7 @@ private:
     ExecutorType executorType_ = ExecutorType::TYPE_RESERVED;
     HcclRtContext context_;
 
-    u32 commIndex_  = 0;
+    u32 commIndex_ = 0;
 };
 }  // namespace hccl
 

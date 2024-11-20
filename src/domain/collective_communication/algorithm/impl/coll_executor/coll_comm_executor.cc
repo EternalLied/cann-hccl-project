@@ -526,14 +526,14 @@ HcclResult CollCommExecutor::MultiRingAsymAllGather(const std::string &tag, Devi
                         algResResp_->slaveStreams[ringIndex], HcclReduceOp::HCCL_REDUCE_RESERVED, OUTER_BRIDGE_RANK_ID,
                         singleRingSliceZero, baseOffset, ringNics[ringIndex%halfRingSize], tag, profStage,
                         outerRingCommInfo, algResResp_->notifiesS2M[ringIndex], algResResp_->notifiesM2S[ringIndex],
-                        ringIndex, type, 0, opInfo, subStreamsInOneRing,
+                        ringIndex, commIndex, type, 0, opInfo, subStreamsInOneRing,
                         mainSignalsInOneRing, subSignalsInOneRing, rankOrder, userMemOutputSlices);
                 } else {
                     algResResp_->threadManage[ringIndex]->Prepare(outputMem, outputMem, inputMem, count, dataType,
                         algResResp_->slaveStreams[ringIndex], HcclReduceOp::HCCL_REDUCE_RESERVED, OUTER_BRIDGE_RANK_ID,
                         singleRingSliceZero, baseOffset, ringNics[ringIndex%halfRingSize], tag, profStage,
                         outerRingCommInfo, algResResp_->notifiesS2M[ringIndex], algResResp_->notifiesM2S[ringIndex],
-                        ringIndex, ExecutorType::ALLGATHER_HALF_RING);
+                        ringIndex, commIndex, ExecutorType::ALLGATHER_HALF_RING);
                 }
                 algResResp_->threadManage[ringIndex]->NotifyStart();    // 给线程发信号启动处理
             } else {

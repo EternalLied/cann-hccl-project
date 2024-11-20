@@ -172,7 +172,7 @@ HcclResult ThreadManage::Prepare(DeviceMem &inputMem, DeviceMem &outputMem, Devi
     const HcclDataType dataType, const Stream &stream, const HcclReduceOp reductionOp, const u32 root,
     const std::vector<Slice> &slices, const u64 baseOffset, std::vector<u32> nicRankList,
     const std::string &tag, s32 profStage, const SubCommInfo &ringSubCommInfo,
-    std::shared_ptr<LocalNotify> &signalAux, std::shared_ptr<LocalNotify> &signalMain, u32 ringIndex,
+    std::shared_ptr<LocalNotify> &signalAux, std::shared_ptr<LocalNotify> &signalMain, u32 ringIndex, const u32 commIndex,
     ExecutorType type, u64 reduceAttr, const HcomCollOpInfo *opInfo,
     std::vector<Stream> subStreamsInOneRing, std::vector<std::shared_ptr<LocalNotify>> mainSignalsInOneRing,
     std::vector<std::shared_ptr<LocalNotify>> subSignalsInOneRing, std::vector<u32> ringsOrder,
@@ -201,6 +201,8 @@ HcclResult ThreadManage::Prepare(DeviceMem &inputMem, DeviceMem &outputMem, Devi
     ringsOrder_ = ringsOrder;
     userMemInputSlices_ = userMemInputSlices;
     executorType_ = type;
+
+    commIndex_ = commIndex;
 
     tag_.assign(tag.begin(), tag.end());
     slices_.assign(slices.begin(), slices.end());
