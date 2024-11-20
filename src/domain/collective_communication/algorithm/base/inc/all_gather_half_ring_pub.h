@@ -51,4 +51,4 @@ private:
 };
 }  // namespace hccl
 
-#endif /* ALL_GATHER_RING_PUB_H */
+#endif /* ALL_GATHER_HALF_RING_PUB_H */

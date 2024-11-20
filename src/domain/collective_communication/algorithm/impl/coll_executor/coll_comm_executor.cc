@@ -545,9 +545,9 @@ HcclResult CollCommExecutor::MultiRingAsymAllGather(const std::string &tag, Devi
                 // 如何判断是否环内是否有数据, 以ring的第一个rank的 size为判断依据
                 std::unique_ptr<ExecutorBase> executor;
                 if (opInfo != nullptr) {
-                    executor.reset(new (std::nothrow) AllGatherRingConcurrentDirect(
-                        dispatcher_, opInfo, topoAttr_.userRank, subStreamsInOneRing,
-                        mainSignalsInOneRing, subSignalsInOneRing, rankOrder, userMemOutputSlices, isSdma));
+                    executor.reset(new (std::nothrow) AllGatherHalfRingDirect(
+                        dispatcher_, opInfo, topoAttr_.userRank, subStreamsInOneRing, mainSignalsInOneRing,
+                        subSignalsInOneRing, rankOrder, commIndex, userMemOutputSlices, isSdma));
                 } else {
                     executor.reset(new (std::nothrow) AllGatherHalfRing(dispatcher_, commIndex));
                 }
@@ -584,9 +584,9 @@ HcclResult CollCommExecutor::MultiRingAsymAllGather(const std::string &tag, Devi
         } else { // 主环
             std::unique_ptr<ExecutorBase> executor;
             if (opInfo != nullptr) {
-                executor.reset(new (std::nothrow) AllGatherRingConcurrentDirect(
+                executor.reset(new (std::nothrow) AllGatherHalfRingDirect(
                     dispatcher_, opInfo, topoAttr_.userRank, subStreamsInOneRing, mainSignalsInOneRing,
-                    subSignalsInOneRing, rankOrder, userMemOutputSlices, isSdma));
+                    subSignalsInOneRing, rankOrder, commIndex, userMemOutputSlices, isSdma));
             } else {
                 executor.reset(new (std::nothrow) AllGatherHalfRing(dispatcher_, commIndex));
             }
