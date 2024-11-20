@@ -112,7 +112,7 @@ HcclResult ThreadManage::ExecuteService()
             subSignalsInOneRing_, ringsOrder_, userMemInputSlices_, false));
             
     } else if (executorType_ == ExecutorType::ALLGATHER_HALF_RING) {
-        executor.reset(new (std::nothrow) AllGatherRing(dispatcher_, commIndex_));
+        executor.reset(new (std::nothrow) AllGatherHalfRing(dispatcher_, commIndex_));
     }
     CHK_SMART_PTR_NULL(executor);
 
