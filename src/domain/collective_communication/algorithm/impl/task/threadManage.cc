@@ -202,6 +202,8 @@ HcclResult ThreadManage::Prepare(DeviceMem &inputMem, DeviceMem &outputMem, Devi
     userMemInputSlices_ = userMemInputSlices;
     executorType_ = type;
 
+    commIndex_ = ringIndex_ % 2;
+
     tag_.assign(tag.begin(), tag.end());
     slices_.assign(slices.begin(), slices.end());
     nicRankList_.assign(nicRankList.begin(), nicRankList.end());
