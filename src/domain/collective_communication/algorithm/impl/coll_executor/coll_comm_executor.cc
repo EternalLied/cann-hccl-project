@@ -533,7 +533,7 @@ HcclResult CollCommExecutor::MultiRingAsymAllGather(const std::string &tag, Devi
                         algResResp_->slaveStreams[ringIndex], HcclReduceOp::HCCL_REDUCE_RESERVED, OUTER_BRIDGE_RANK_ID,
                         singleRingSliceZero, baseOffset, ringNics[ringIndex%halfRingSize], tag, profStage,
                         outerRingCommInfo, algResResp_->notifiesS2M[ringIndex], algResResp_->notifiesM2S[ringIndex],
-                        ringIndex, ExecutorType::ALLGATHER_RING);
+                        ringIndex, ExecutorType::ALLGATHER_HALF_RING);
                 }
                 algResResp_->threadManage[ringIndex]->NotifyStart();    // 给线程发信号启动处理
             } else {
@@ -549,7 +549,7 @@ HcclResult CollCommExecutor::MultiRingAsymAllGather(const std::string &tag, Devi
                         dispatcher_, opInfo, topoAttr_.userRank, subStreamsInOneRing,
                         mainSignalsInOneRing, subSignalsInOneRing, rankOrder, userMemOutputSlices, isSdma));
                 } else {
-                    executor.reset(new (std::nothrow) AllGatherHalfRing(dispatcher_));
+                    executor.reset(new (std::nothrow) AllGatherHalfRing(dispatcher_, commIndex));
                 }
                 CHK_SMART_PTR_NULL(executor);
                 ret = executor->Prepare(outputMem, outputMem, inputMem, count, dataType,
@@ -588,7 +588,7 @@ HcclResult CollCommExecutor::MultiRingAsymAllGather(const std::string &tag, Devi
                     dispatcher_, opInfo, topoAttr_.userRank, subStreamsInOneRing, mainSignalsInOneRing,
                     subSignalsInOneRing, rankOrder, userMemOutputSlices, isSdma));
             } else {
-                executor.reset(new (std::nothrow) AllGatherHalfRing(dispatcher_));
+                executor.reset(new (std::nothrow) AllGatherHalfRing(dispatcher_, commIndex));
             }
             CHK_SMART_PTR_NULL(executor);
             ret = executor->Prepare(outputMem, outputMem, inputMem, count, dataType, stream, HCCL_REDUCE_RESERVED,

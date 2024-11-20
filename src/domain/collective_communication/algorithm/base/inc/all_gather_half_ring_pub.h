@@ -16,7 +16,7 @@
 namespace hccl {
 class AllGatherHalfRing : public ExecutorBase {
 public:
-    explicit AllGatherHalfRing(const HcclDispatcher dispatcher);
+    explicit AllGatherHalfRing(const HcclDispatcher dispatcher, const u32 commIndex);
 
     ~AllGatherHalfRing() override;
 
@@ -46,6 +46,8 @@ private:
     // 迭代6新增加
     std::shared_ptr<Transport> linkLeft_;
     std::shared_ptr<Transport> linkRight_;
+
+    const u32                  commIndex_;
 };
 }  // namespace hccl
 

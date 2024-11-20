@@ -26,7 +26,8 @@ enum class ExecutorType {
     REDUCE_SCATTER_RING_DIRECT_RDMA,
     ALLGATHER_RING_DIRECT,
     ALLGATHER_RING_DIRECT_RDMA,
-    TYPE_RESERVED
+    TYPE_RESERVED,
+    ALLGATHER_HALF_RING
 };
 
 class ThreadManage {
@@ -101,6 +102,8 @@ private:
     std::vector<Slice> userMemInputSlices_;
     ExecutorType executorType_ = ExecutorType::TYPE_RESERVED;
     HcclRtContext context_;
+
+    u32 commIndex_  = 0;
 };
 }  // namespace hccl
 

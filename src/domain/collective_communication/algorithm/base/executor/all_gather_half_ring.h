@@ -16,4 +16,4 @@
 namespace hccl {
 }  // namespace hccl
 
-#endif /* * ALL_GATHER_RING_H */
+#endif /* * ALL_GATHER_HALF_RING_H */

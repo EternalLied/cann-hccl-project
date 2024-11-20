@@ -110,6 +110,9 @@ HcclResult ThreadManage::ExecuteService()
         executor.reset(new (std::nothrow) AllGatherRingConcurrentDirect(
             dispatcher_, opInfo_, userRank_, subStreamsInOneRing_, mainSignalsInOneRing_,
             subSignalsInOneRing_, ringsOrder_, userMemInputSlices_, false));
+            
+    } else if (executorType_ == ExecutorType::ALLGATHER_HALF_RING) {
+        executor.reset(new (std::nothrow) AllGatherRing(dispatcher_, commIndex_));
     }
     CHK_SMART_PTR_NULL(executor);
 

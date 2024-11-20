@@ -361,7 +361,7 @@ HcclResult CollAllGatherDoubleRingAsymExecutor::KernelRun(const OpParam &param, 
     return HCCL_SUCCESS;
 }
 
-REGISTER_EXEC("AllGatherDoubleRingConcurrentExecutor", AllGatherDoubleRingConcurrent,
+REGISTER_EXEC("AllGatherDoubleRingAsymExecutor", AllGatherDoubleRingAsym,
     CollAllGatherDoubleRingAsymExecutor);
 
 } // namespace hccl

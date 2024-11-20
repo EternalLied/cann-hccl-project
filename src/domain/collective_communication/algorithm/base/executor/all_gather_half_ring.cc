@@ -11,7 +11,7 @@
 #include "all_gather_half_ring.h"
 
 namespace hccl {
-AllGatherHalfRing::AllGatherHalfRing(const HcclDispatcher dispatcher) : ExecutorBase(dispatcher)
+AllGatherHalfRing::AllGatherHalfRing(const HcclDispatcher dispatcher, const u32 commIndex) : ExecutorBase(dispatcher), commIndex_(commIndex)
 {
 }
 
@@ -177,7 +177,7 @@ HcclResult AllGatherHalfRing::RunAllGather(u32 rank, u32 rankSize, const std::ve
             for (u32 j = 0; j < sliceSize; j++) {
                     u32 txTempIndex = txSliceIndex * sliceSize + j;
                     u32 rxTempIndex = rxSliceIndex * sliceSize + j;
-                    if (nicRankList_[0] < nicRankList_[1]) {
+                    if (commIndex_ == 0) {
                         txTempSlice.offset = outputSlices[txTempIndex].offset + outputSlices[txTempIndex].size / 2;
                         rxTempSlice.offset = outputSlices[rxTempIndex].offset + outputSlices[rxTempIndex].size / 2;
                     } else {
