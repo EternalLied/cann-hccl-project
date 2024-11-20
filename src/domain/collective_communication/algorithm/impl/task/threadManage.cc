@@ -113,6 +113,15 @@ HcclResult ThreadManage::ExecuteService()
             
     } else if (executorType_ == ExecutorType::ALLGATHER_HALF_RING) {
         executor.reset(new (std::nothrow) AllGatherHalfRing(dispatcher_, commIndex_));
+    } else if (executorType_ == ExecutorType::ALLGATHER_HALF_RING_DIRECT) {
+        executor.reset(new (std::nothrow) AllGatherHalfRingDirect(
+            dispatcher_, opInfo_, userRank_, subStreamsInOneRing_, mainSignalsInOneRing_,
+            subSignalsInOneRing_, ringsOrder_, commIndex_, userMemInputSlices_));
+    } else if (executorType_ == ExecutorType::ALLGATHER_HALF_RING_DIRECT_RDMA) {
+        executor.reset(new (std::nothrow) AllGatherHalfRingDirect(
+            dispatcher_, opInfo_, userRank_, subStreamsInOneRing_, mainSignalsInOneRing_,
+            subSignalsInOneRing_, ringsOrder_, commIndex_, userMemInputSlices_, false));
+            
     }
     CHK_SMART_PTR_NULL(executor);
 

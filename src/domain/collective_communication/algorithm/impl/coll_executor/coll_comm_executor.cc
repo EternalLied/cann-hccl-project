@@ -520,7 +520,7 @@ HcclResult CollCommExecutor::MultiRingAsymAllGather(const std::string &tag, Devi
                 workflowMode_ == HcclWorkflowMode::HCCL_WORKFLOW_MODE_OP_BASE) {
                 if (opInfo != nullptr) {
                     ExecutorType type = isSdma ?
-                        ExecutorType::ALLGATHER_RING_DIRECT : ExecutorType::ALLGATHER_RING_DIRECT_RDMA;
+                        ExecutorType::ALLGATHER_HALF_RING_DIRECT : ExecutorType::ALLGATHER_HALF_RING_DIRECT_RDMA;
                     algResResp_->threadManage[ringIndex]->Prepare(
                         outputMem, outputMem, inputMem, count, dataType,
                         algResResp_->slaveStreams[ringIndex], HcclReduceOp::HCCL_REDUCE_RESERVED, OUTER_BRIDGE_RANK_ID,
