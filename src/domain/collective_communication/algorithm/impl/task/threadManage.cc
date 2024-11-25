@@ -17,6 +17,7 @@
 #include "all_gather_ring_concurrent_direct_pub.h"
 #include "threadManage.h"
 #include "coll_executor_base.h"
+#include "sal_pub.h"
 
 namespace hccl {
 ThreadManage::ThreadManage(s32 deviceLogicId, u32 userRank, const HcclDispatcher dispatcher)
@@ -110,18 +111,6 @@ HcclResult ThreadManage::ExecuteService()
         executor.reset(new (std::nothrow) AllGatherRingConcurrentDirect(
             dispatcher_, opInfo_, userRank_, subStreamsInOneRing_, mainSignalsInOneRing_,
             subSignalsInOneRing_, ringsOrder_, userMemInputSlices_, false));
-            
-    } else if (executorType_ == ExecutorType::ALLGATHER_HALF_RING) {
-        executor.reset(new (std::nothrow) AllGatherHalfRing(dispatcher_, commIndex_));
-    } else if (executorType_ == ExecutorType::ALLGATHER_HALF_RING_DIRECT) {
-        executor.reset(new (std::nothrow) AllGatherHalfRingDirect(
-            dispatcher_, opInfo_, userRank_, subStreamsInOneRing_, mainSignalsInOneRing_,
-            subSignalsInOneRing_, ringsOrder_, commIndex_, userMemInputSlices_));
-    } else if (executorType_ == ExecutorType::ALLGATHER_HALF_RING_DIRECT_RDMA) {
-        executor.reset(new (std::nothrow) AllGatherHalfRingDirect(
-            dispatcher_, opInfo_, userRank_, subStreamsInOneRing_, mainSignalsInOneRing_,
-            subSignalsInOneRing_, ringsOrder_, commIndex_, userMemInputSlices_, false));
-            
     }
     CHK_SMART_PTR_NULL(executor);
 
@@ -153,6 +142,9 @@ HcclResult ThreadManage::ExecuteService()
 
 HcclResult ThreadManage::ThreadExecuteFn()
 {
+    //给当前线程添加名字
+    SetThreadName("Hccl_ThreadManage");
+
     threadId_ = SalGetTid();
     HCCL_INFO("[ThreadManage][ThreadExecuteFn]deviceLogicId_[%d], threadId_[%u]", deviceLogicId_, threadId_);
 
@@ -210,8 +202,6 @@ HcclResult ThreadManage::Prepare(DeviceMem &inputMem, DeviceMem &outputMem, Devi
     ringsOrder_ = ringsOrder;
     userMemInputSlices_ = userMemInputSlices;
     executorType_ = type;
-
-    commIndex_ = ringIndex_ % 2;
 
     tag_.assign(tag.begin(), tag.end());
     slices_.assign(slices.begin(), slices.end());
