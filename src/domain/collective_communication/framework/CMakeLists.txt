@@ -10,7 +10,6 @@ add_library(hccl  SHARED)
 
 set(hccl_include_list
     ${HCCL_BASE_DIR}/algorithm/base/inc
-    ${HCCL_BASE_DIR}/algorithm/pub_inc
     ${HCCL_BASE_DIR}/pub_inc
     ${HCCL_BASE_DIR}/pub_inc/hccl
     ${HCCL_BASE_DIR}/algorithm/base/executor
@@ -22,6 +21,7 @@ set(hccl_include_list
     ${HCCL_BASE_DIR}/algorithm/impl/inc
     ${HCCL_BASE_DIR}/algorithm/impl/task
     ${HCCL_BASE_DIR}/algorithm/impl/resource_manager
+    ${HCCL_BASE_DIR}/algorithm/impl/operator
     ${HCCL_BASE_DIR}/algorithm/impl/coll_executor
 
     ${HCCL_BASE_DIR}/framework/common/src/

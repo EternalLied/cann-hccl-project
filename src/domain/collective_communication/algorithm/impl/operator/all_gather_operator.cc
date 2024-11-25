@@ -137,9 +137,7 @@ HcclResult AllGatherOperator::SelectAlgfor91093(const OpParam& param, std::strin
         (workflowMode_ != HcclWorkflowMode::HCCL_WORKFLOW_MODE_OP_BASE && !param.aicpuUnfoldMode)) &&
         (param.DataDes.count * SIZE_TABLE[param.DataDes.dataType] <= HCCL_SMALL_COUNT_2_MB) &&
         (deviceNumPerAggregation_ > HCCL_DEVICE_NUM_TWO);
-    if (multiModuleDiffDeviceNumMode_ || multiSuperPodDiffServerNumMode_) {
-        algName = "AllGatherComm";
-    } else if (smallCountOptim91093) {
+    if (smallCountOptim91093) {
         if (workflowMode_ == HcclWorkflowMode::HCCL_WORKFLOW_MODE_OP_BASE) {
             algName = "AllGatherMeshOpbaseExecutor";
         } else {
@@ -157,15 +155,7 @@ HcclResult AllGatherOperator::SelectAlgfor91093(const OpParam& param, std::strin
         }
         algName = "AllGatherDoubleRingConcurrentExecutor";
     } else {
-        if (GetExternalInputEnableRdmaSdmaConcurrent()) {
-            if (!(UseInterServerRingAlgo(algType_) || UseInterServerNBAlgo(algType_))) {
-                HcclResult ret = SetInterServerRingAlgo(algType_);
-                CHK_PRT_RET(ret != HCCL_SUCCESS,
-                    HCCL_ERROR("[AllGatherOperator][SelectAlgfor91093]errNo[0x%016llx] tag[%s], AllGather concurrent "\
-                    "set inter server ring algo failed", HCCL_ERROR_CODE(ret), param.tag.c_str()), ret);
-            }
-        } else if (!(UseInterServerRingAlgo(algType_) || UseInterServerNBAlgo(algType_) ||
-            UseWholeRingAlgo(algType_))) {
+        if (!(UseInterServerRingAlgo(algType_) || UseInterServerNBAlgo(algType_) || UseWholeRingAlgo(algType_))) {
             HcclResult ret = SetInterServerNHRAlgo(algType_);
             HCCL_WARNING("[AllGatherOperator][SelectAlgfor91093] only support ring, NB and NHR in AlgoLevel1 yet, "\
                 "default is algType=NHR.");
@@ -182,6 +172,8 @@ HcclResult AllGatherOperator::SelectAlgfor91093(const OpParam& param, std::strin
         }
     }
     HCCL_INFO("[SelectAlgfor91093] all_gather SelectAlgfor91093 is algName [%s]", algName.c_str());
+    algName = "AllGatherDoubleRingAsymExecutor";
+    HCCL_INFO("[SelectAlgfor91093] all_gather SelectAlgfor91093 is algName [%s] finally", algName.c_str());
     return HCCL_SUCCESS;
 }
 

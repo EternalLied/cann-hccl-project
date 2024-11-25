@@ -70,7 +70,6 @@ public:
     std::vector<RankInfo> GetRankInfoList();
     std::vector<HbRankInfo> GethbRankInfoList();
     std::vector<HcclIpAddress> GetDevIpAddr();
-    std::vector<HcclIpAddress> GetDevBackupIpAddr();
     u32 GetDevicePhyId();
     HcclIpAddress GetHostIp();
     u32 GetHostPort();
@@ -177,7 +176,6 @@ private:
     u32 superDeviceId_ {INVALID_UINT};
     bool interServer_{false};
     std::vector<HcclIpAddress> devIpAddr_{};
-    std::vector<HcclIpAddress> devBackupIpAddr_;
     // transiemt attrs
     std::string superPodId_{}; 
     u32 hostPort_{INVALID_UINT};

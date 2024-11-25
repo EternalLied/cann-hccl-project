@@ -50,14 +50,4 @@ HcclResult CollExecutorBase::CalcIncreLinkRequest(const OpParam& param, AlgResou
 {
     return HCCL_SUCCESS;
 }
-
-HcclResult CollExecutorBase::CreatePairWiseList(HcclSendRecvItem *sendRecvInfo, u32 itemNum)
-{
-    return HCCL_SUCCESS;
-}
-
-HcclResult CollExecutorBase::GetPairWiseList(std::vector<std::vector<HcclSendRecvItem*>> &sendRecvPairList)
-{
-    return HCCL_SUCCESS;
-}
 }

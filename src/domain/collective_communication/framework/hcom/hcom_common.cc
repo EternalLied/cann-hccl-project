@@ -627,14 +627,8 @@ HcclResult HcomDestroyBackloggedGroup(const std::string &group)
     HcomInfo &hcomInfo = HcomGetCtxHomInfo();
     std::unique_lock<std::mutex> lock(hcomInfo.backloggedGroupLock);
     if (hcomInfo.backloggedGroup.find(group) == hcomInfo.backloggedGroup.end()) {
-        if (!hcomInfo.isHcomInit) {
-            HCCL_WARNING("[Destroy][BackloggedGroup]group[%s] is not existed, and hcom has not been inited yet",
-                group.c_str());
-            return HCCL_SUCCESS;
-        } else {
-            HCCL_ERROR("[Destroy][BackloggedGroup]group[%s] is not existed", group.c_str());
-            return HCCL_E_PARA;
-        }
+        HCCL_ERROR("[Destroy][BackloggedGroup]group[%s] is not existed", group.c_str());
+        return HCCL_E_PARA;
     } else {
         hcomInfo.backloggedGroup.erase(group);
     }

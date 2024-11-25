@@ -59,11 +59,6 @@ HcclResult CollReduceScatterRingFor91093Executor::CalcStreamNum(u32& streamNum)
     if (workflowMode_ == HcclWorkflowMode::HCCL_WORKFLOW_MODE_OP_BASE) {
         totalStreamNum *= STREAM_NUM_FOR_DMAREDUCE_ONE_RING;
     }
-    if (workflowMode_ == HcclWorkflowMode::HCCL_WORKFLOW_MODE_OPS_KERNEL_INFO_LIB && 
-        GetExternalInputEnableRdmaSdmaConcurrent()) {
-        totalStreamNum += (topoType_ == TopoType::TOPO_TYPE_NP_DOUBLE_RING) ? OUTER_PLANE_NUM_IN_NPRING_DOUBLE :
-        OUTER_PLANE_NUM_IN_NPRING_SINGLE;
-    }
     streamNum = totalStreamNum - 1;
     HCCL_INFO("[CollReduceScatterRingFor91093Executor][CalcStreamNum] tag[%s] streamNum[%u]",
         tag_.c_str(), streamNum);
@@ -162,7 +157,7 @@ HcclResult CollReduceScatterRingFor91093Executor::RunIntraSeverReduceScatter(
     const u64 count, const HcclDataType &dataType, const HcclReduceOp &reductionOp,
     const std::vector<std::vector<Slice>> &multRingsSliceZero, const Stream &stream, s32 profStage,
     const u64 baseOffset, const HcomCollOpInfo *opInfo,
-    const std::vector<std::vector<Slice>> &multRingsUserMemSlice, const bool retryEnable)
+    const std::vector<std::vector<Slice>> &multRingsUserMemSlice)
 {
     CHK_RET(MultiRingReduceScatter(tag, inputMem, outputMem, count, dataType, reductionOp,
         multRingsSliceZero, stream, profStage, baseOffset, opInfo, multRingsUserMemSlice));
@@ -286,13 +281,13 @@ HcclResult CollReduceScatterRingFor91093Executor::KernelRun(const OpParam &param
     HCCL_DEBUG("[CollReduceScatterRingFor91093Executor][KernelRun] execMem.inputPtr[%p], execMem.outputPtr[%p], execMem.inputMem[%p], execMem.outputMem[%p]",
         execMem.inputPtr, execMem.outputPtr, execMem.inputMem.ptr(), execMem.outputMem.ptr());
     HcomCollOpInfo *opInfoPtr = nullptr;
-    if (DMAReduceFlag_) {
+    if (DMAReduceFlag_ && (!GetExternalInputEnableInplace())) {
         opInfoPtr = &opInfo;
     }
 
     if (opInfoPtr == nullptr &&
         (!(topoType_ == TopoType::TOPO_TYPE_NP_DOUBLE_RING &&
-        (workflowMode_ == HcclWorkflowMode::HCCL_WORKFLOW_MODE_OPS_KERNEL_INFO_LIB || param.retryEnable)))) {
+        workflowMode_ == HcclWorkflowMode::HCCL_WORKFLOW_MODE_OPS_KERNEL_INFO_LIB))) {
         multRingsUserMemSlice = level0DataSegsSlice;
     } else {
         for (u32 ringIndex = 0; ringIndex < level0DataSegsSlice.size(); ringIndex++) {
@@ -300,9 +295,6 @@ HcclResult CollReduceScatterRingFor91093Executor::KernelRun(const OpParam &param
             for (auto &cclSlice : level0DataSegsSlice[ringIndex]) {
                 Slice tmpSlice;
                 tmpSlice.size = cclSlice.size;
-                CHK_PRT_RET(execMem.outputMem.size() == 0,
-                    HCCL_ERROR("[CollReduceScatterRingFor91093Executor][KernelRun]cclout memsize[%llu] is zero",
-                    execMem.outputMem.size()), HCCL_E_PARA);              
                 tmpSlice.offset =
                     (cclSlice.offset / execMem.outputMem.size()) * param.DataDes.count * perDataSize +
                     multiStreamSlice[ringIndex][0].offset;
@@ -315,24 +307,24 @@ HcclResult CollReduceScatterRingFor91093Executor::KernelRun(const OpParam &param
     }
     // 区分消减拷贝场景
     if (topoType_ == TopoType::TOPO_TYPE_NP_DOUBLE_RING &&
-        (workflowMode_ == HcclWorkflowMode::HCCL_WORKFLOW_MODE_OPS_KERNEL_INFO_LIB)) {
+        workflowMode_ == HcclWorkflowMode::HCCL_WORKFLOW_MODE_OPS_KERNEL_INFO_LIB) {
         // 图模式opinfo不为空
         HcomCollOpInfo graphModeOpInfo = {
             "", execMem.inputMem.ptr(), nullptr, param.DataDes.count, param.DataDes.dataType,
             param.root, param.reduceType};
         CHK_RET(RunIntraSeverReduceScatter(param.tag, execMem.inputMem, execMem.scratchMem, execMem.count,
             param.DataDes.dataType, param.reduceType, level0DataSegsSlice,
-            param.stream, PROF_STAGE_1, 0, &graphModeOpInfo, multRingsUserMemSlice, param.retryEnable));
+            param.stream, PROF_STAGE_1, 0, &graphModeOpInfo, multRingsUserMemSlice));
     } else if (opInfoPtr != nullptr && (innerRankSize > 1 || level2RankSize > 1)) {
         HcomCollOpInfo opInfoByReduceScatterDMAreduce = *opInfoPtr;
         opInfoByReduceScatterDMAreduce.outputAddr      = nullptr;
         CHK_RET(RunIntraSeverReduceScatter(param.tag, execMem.inputMem, execMem.scratchMem, execMem.count,
             param.DataDes.dataType, param.reduceType, level0DataSegsSlice,
-            param.stream, PROF_STAGE_1, 0, &opInfoByReduceScatterDMAreduce, multRingsUserMemSlice, param.retryEnable));
+            param.stream, PROF_STAGE_1, 0, &opInfoByReduceScatterDMAreduce, multRingsUserMemSlice));
     } else {
         CHK_RET(RunIntraSeverReduceScatter(param.tag, execMem.inputMem, execMem.scratchMem, execMem.count,
             param.DataDes.dataType, param.reduceType,
-            level0DataSegsSlice, param.stream, PROF_STAGE_1, 0, opInfoPtr, multRingsUserMemSlice, param.retryEnable));
+            level0DataSegsSlice, param.stream, PROF_STAGE_1, 0, opInfoPtr, multRingsUserMemSlice));
     }
     // 对于单server图模式的最后一步需要把数据从ccl input拷贝到ccl output上
     if (innerRankSize == 1 && level2RankSize == 1 && opInfoPtr == nullptr) {

@@ -25,8 +25,7 @@ private:
         const HcclDataType dataType, const HcclReduceOp reductionOp,
         const std::vector<std::vector<Slice>> multRingsSliceZero, Stream stream, s32 profStage,
         const u64 baseOffset = 0, const HcomCollOpInfo *opInfo = nullptr,
-        const std::vector<std::vector<Slice>> multRingsUserMemSlice = std::vector<std::vector<Slice>>(0),
-        const bool retryEnable = false) override;
+        const std::vector<std::vector<Slice>> multRingsUserMemSlice = std::vector<std::vector<Slice>>(0)) override;
 };
 
 }  // namespace hccl

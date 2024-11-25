@@ -37,7 +37,6 @@ public:
     virtual ~CommAHCBaseInfo();
 
     static HcclResult CheckSubGroups(std::vector<std::vector<u32>> &subGroups);
-    virtual HcclResult Init();
 
     virtual HcclResult InitDstRanks(u32 rank, std::set<u32> &dstRanks);
     virtual HcclResult CalcIntraSlicesAndLinks(const u32 rank, const u32 dataUnitSize, const u64 count,
@@ -75,7 +74,6 @@ class CommBrokeAlignInfo : public CommAHCBaseInfo {
 public:
     explicit CommBrokeAlignInfo(const std::vector<std::vector<u32>> &subGroups);
     ~CommBrokeAlignInfo();
-    HcclResult Init() override;
 
     bool IsNeedInterProc(const u32 rank) override;
     HcclResult CalcIntraSlicesAndLinks(const u32 rank, const u32 dataUnitSize, const u64 count,
@@ -90,7 +88,6 @@ class CommAHCAlignInfo : public CommAHCBaseInfo {
 public:
     explicit CommAHCAlignInfo(const std::vector<std::vector<u32>> &subGroups);
     ~CommAHCAlignInfo();
-    HcclResult Init() override;
 
     HcclResult CalcIntraSlicesAndLinks(const u32 rank, const u32 dataUnitSize, const u64 count,
         const std::vector<LINK> &links, std::vector<LINK> &intraLinks, std::vector<Slice> &intraSlices) override;

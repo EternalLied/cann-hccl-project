@@ -11,7 +11,7 @@
 #ifndef EXECUTOR_IMPL_H
 #define EXECUTOR_IMPL_H
 
-/* 节点间的集合通信操作汇总 */
+/* * 节点间的集合通信操作汇总 */
 #include "aligned_reduce_scatter_double_ring_with_serial_local_copy_pub.h"
 #include "aligned_reduce_scatter_double_ring_pub.h"
 #include "aligned_all_gather_double_ring_pub.h"
@@ -92,7 +92,10 @@
 #include "all_reduce_hd_optim_pub.h"
 #include "broadcast_oneshot_pub.h"
 
+#include "all_gather_half_ring_pub.h"
+#include "all_gather_half_ring_direct_pub.h"
+
 namespace hccl {
 }
 
-#endif /* EXECUTOR_IMPL_H */
+#endif /* * EXECUTOR_IMPL_H */
